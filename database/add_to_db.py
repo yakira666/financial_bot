@@ -1,4 +1,4 @@
-from config_data.config import DB_NAME
+from loader import db
 from loguru import logger
 from aiogram.types import Message
 import sqlite3
@@ -14,7 +14,7 @@ async def add_user(message: Message) -> None:
     :return:
     """
 
-    connection = sqlite3.connect(DB_NAME)
+    connection = sqlite3.connect(db)
     cursor = connection.cursor()
     cursor.execute("""CREATE TABLE IF NOT EXISTS user(
         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
