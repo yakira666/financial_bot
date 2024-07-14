@@ -33,3 +33,42 @@ async def add_user(message: Message) -> None:
     except sqlite3.IntegrityError:
         logger.info(f'Данный пользователь уже существует. User_id: {message.chat.id}')
     connection.close()
+
+
+async def add_query(query_data: dict) -> None:
+    """
+    Создаёт таблицу, если она ещё не создавалась и добавляет туда данные,
+    которые ввел пользователь для поиска
+    : param query_data : dict
+    : return : None
+    """
+    user_id = query_data['chat_id']
+    connection = sqlite3.connect(db)
+    cursor = connection.cursor()
+    cursor.execute("""CREATE TABLE IF NOT EXISTS query(
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+        user_id INTEGER,
+        data_symbol STRING);    
+    """)
+    try:
+        cursor.execute(
+            "INSERT INTO query(user_id, data_symbol) VALUES (?, ?)",
+            (
+                user_id,
+                query_data['data_symbol']
+            )
+        )
+        logger.info(f'В БД добавлен новый запрос. User_id: {user_id}')
+
+        # Нам не нужно очень много записей историй поиска, поэтому для каждого пользователя
+        # будем хранить только 5 последних записей, лишние - удалим.
+        cursor.execute(f"""
+                DELETE FROM query WHERE `user_id` = '{user_id}'
+                AND
+                ((SELECT COUNT(*) FROM query WHERE `user_id` = '{user_id}' ) > 5 )
+            """
+                       )
+        connection.commit()
+    except sqlite3.IntegrityError:
+        logger.info(f'Запрос с такой датой и временем уже существует. User_id: {user_id}')
+    connection.close()

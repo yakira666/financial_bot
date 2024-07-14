@@ -5,10 +5,10 @@ from aiogram.types import Message
 from aiogram import Router
 from utils.api_request import request
 
-router = Router()
+from loader import main_router
 
 
-@router.message(Command('day_watch'))
+@main_router.message(Command('day_watch'))
 async def day_watch(message: Message):
     logger.info(f"Вывод торгового дня")
     res = request('GET', "https://seeking-alpha.p.rapidapi.com/market/get-day-watch", {})
