@@ -12,8 +12,8 @@ from database.read_from_db import read_query
 
 @main_router.message(Command('analysis'))
 async def news_func(message: Message, state: FSMContext):
-    logger.info(f'Вывод анализа по символу для пользователя {message.chat.id}')
-    await message.answer("Введите имя компании или ее тикер")
+    logger.info(f'Запрос символа у пользователя с User_id: {message.chat.id}')
+    await message.answer("Введите имя компании или ее тикер!")
     await state.set_state(UserState.symbol_for_analysis)
 
 
@@ -24,7 +24,7 @@ async def input_symbol(message: Message, state: FSMContext):
     if res := res_req.json()['symbols']:
         for k in res:
             if k['slug'] == message.text.lower():
-                logger.info("Все вверно введено выдаем информацию")
+                logger.info(f"Все вверно введено пользователем c User_id:{message.chat.id}, выдаем информацию")
                 await message.answer(f"Мы нашли ваш тикер: <b>{k['name'].replace('</b>', '').replace('<b>', '')}</b>")
                 await state.set_state(UserState.analysis)
                 await add_query(
@@ -37,15 +37,24 @@ async def input_symbol(message: Message, state: FSMContext):
 
 
 @main_router.message(UserState.analysis)
-async def analysis_func(message: Message):
-    if int(message.text) <= 40:
-        print(message.text)
-        data = await read_query(message.chat.id)
-        unpacked_data = ''.join([item for (item,) in data])
-        print(unpacked_data)
-        result_res = request("GET", "https://seeking-alpha.p.rapidapi.com/analysis/v2/list",
-                             querystring={'id': unpacked_data, 'size': int(message.text)})
-        for k in result_res.json()['data']:
-            url = f"https://seekingalpha.com/{k['links']['self']}"
-            text = f"[{k['attributes']['title']}]({url})"
-            await message.answer(text, parse_mode="Markdown")
+async def analysis_func(message: Message, state: FSMContext):
+    try:
+        if int(message.text) <= 40:
+            data = await read_query(message.chat.id)
+            unpacked_data = ''.join([item for (item,) in data])
+            result_res = request("GET", "https://seeking-alpha.p.rapidapi.com/analysis/v2/list",
+                                 querystring={'id': unpacked_data, 'size': int(message.text)})
+            await state.set_state(UserState.symbol_for_analysis)
+            await message.answer('Мы не нашли аналитики по этому тикеру, выберете другой тикер, или другую команду')
+            for k in result_res.json()['data']:
+                url = f"https://seekingalpha.com/{k['links']['self']}"
+                text = f"[{k['attributes']['title']}]({url})"
+                await message.answer(text, parse_mode="Markdown")
+            logger.info(f"Выдан анализ пользователю c User_id:{message.chat.id}")
+            await state.set_state(UserState.symbol_for_analysis)
+            await message.answer('Если интересует другой тикер введите его, или выберете другую команду')
+    except:
+        logger.info('Введена неправильная команда!')
+        await state.set_state(UserState.symbol_for_analysis)
+        await message.answer('Мы не нашли аналитики по этому тикеру, выберете другой тикер, или другую команду')
+        return

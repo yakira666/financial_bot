@@ -4,10 +4,13 @@ from loguru import logger
 from loader import main_router
 from database.add_to_db import add_user
 from config_data.config import DEFAULT_COMMANDS
+from aiogram.fsm.context import FSMContext
+from states.user_states import UserState
 
 
 @main_router.message(CommandStart())
-async def cmd_start(message: Message):
+async def cmd_start(message: Message, state: FSMContext):
+    await state.set_state(UserState.start)
     logger.info(f'Начало работы бота')
     await add_user(message)
     text = "\n".join([f'/{k} - {i}' for k, i in DEFAULT_COMMANDS[2::]])

@@ -1,12 +1,14 @@
 from loguru import logger
 from aiogram import types
 from loader import main_router
-
 from utils.api_request import request, request_for_profile
 
 values_list = ["top_gainers", "top_losers", "cryptocurrencies", "most_active", "in_the_news", "faang_stocks",
                "sp500_gainers", "sp500_losers", "cap400_gainers", "cap400_losers", "cap600_gainers", "cap600_losers"]
 
+
+# Не нравится как долго работает функция, возможно нужно будет просто делать запрос на стороне
+# по с задежкой предположим 2 минуты и пересохранять в бд, а из бд уже дергать в функции и выводить юзеру
 
 @main_router.callback_query(lambda callback_value: callback_value.data in values_list)
 async def top_gainers(callback: types.CallbackQuery):
