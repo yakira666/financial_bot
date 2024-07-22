@@ -7,6 +7,7 @@ from handlers.callback_handlers.call_find_symbol import values_list
 async def create_keyboards(message, res):
     keyboard = InlineKeyboardBuilder()
     try:
+
         for name_attr in res.json()['symbols']:
             keyboard.add(
                 InlineKeyboardButton(

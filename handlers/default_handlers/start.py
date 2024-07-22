@@ -10,8 +10,13 @@ from states.user_states import UserState
 
 @main_router.message(CommandStart())
 async def cmd_start(message: Message, state: FSMContext):
-    await state.set_state(UserState.start)
+    await state.set_state(UserState.start_state)
     logger.info(f'Начало работы бота')
     await add_user(message)
     text = "\n".join([f'/{k} - {i}' for k, i in DEFAULT_COMMANDS[2::]])
     await message.answer(f'Привет {message.from_user.full_name}, рад тебя видеть.\nВот что я умею:\n{text}')
+
+
+@main_router.message(UserState.start_state)
+async def start_com(message: Message):
+    await message.answer("Выберите пожалуйства команду!")
