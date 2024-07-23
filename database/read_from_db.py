@@ -35,7 +35,7 @@ async def read_query_news(user: int) -> list:
     connect = sqlite3.connect(db)
     cursor = connect.cursor()
     try:
-        cursor.execute("SELECT `data_symbol` FROM query_news WHERE `user_id` = ? ORDER BY id DESC LIMIT 1", (user,))
+        cursor.execute("SELECT * FROM query_news WHERE `user_id` = ?", (user,))
         records = cursor.fetchall()
         connect.close()
         return records

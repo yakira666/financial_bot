@@ -81,40 +81,31 @@ async def add_query_news(query_data: dict) -> None:
     : param query_data : dict
     : return : None
     """
-    user_id = query_data['chat_id']
+    user_id = query_data['user_id']
     connection = sqlite3.connect(db)
     cursor = connection.cursor()
     cursor.execute("""CREATE TABLE IF NOT EXISTS query_news(
         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
         user_id INTEGER,
         category_news STRING,
-        quantity INTEGER,
-        link_list JSON,
-        date DATETIME
+        quantity_news INTEGER,
+        link_list STRING,
+        date DATE
         );    
     """)
     try:
         cursor.execute(
-            "INSERT INTO query_news(user_id, category_news, quantity, link_list, date) VALUES (?, ?, ?, ?, ?)",
+            "INSERT INTO query_news(user_id, category_news, quantity_news, link_list, date) VALUES (?, ?, ?, ?, ?)",
             (
                 user_id,
                 query_data['category_news'],
-                query_data['quantity'],
+                query_data['quantity_news'],
                 query_data['link_list'],
                 query_data['date'],
             )
         )
         logger.info(f'В БД добавлен новый запрос. User_id: {user_id}')
-
-        # Нам не нужно очень много записей историй поиска, поэтому для каждого пользователя
-        # будем хранить только 5 последних записей, лишние - удалим.
-        cursor.execute(f"""
-                DELETE FROM query_news WHERE `user_id` = '{user_id}'
-                AND
-                ((SELECT COUNT(*) FROM query WHERE `user_id` = '{user_id}' ) > 5 )
-            """
-                       )
         connection.commit()
     except sqlite3.IntegrityError:
-        logger.info(f'Запрос с такой датой и временем уже существует. User_id: {user_id}')
+        logger.info(f'такой запрос уже существует от User_id: {user_id}')
     connection.close()

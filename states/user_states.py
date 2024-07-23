@@ -2,7 +2,6 @@ from aiogram.filters.state import State, StatesGroup
 
 
 class UserState(StatesGroup):
-    start_state = State()  # Первоначальное состояние
     symbol_for_analysis_state = State()  # Состояния для поиска тикера
     analysis_state = State()  # Состояние выдачи аналитики
     symbol_for_news_state = State()  # Состояния для поиска тикера
