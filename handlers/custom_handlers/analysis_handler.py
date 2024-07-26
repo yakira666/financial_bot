@@ -5,10 +5,11 @@ from loguru import logger
 from database.add_to_db import add_query
 from states.user_states import UserState
 from utils.api_request import request
-from keyboards.inline.keyboard_for_analysis import create_keyboards
+from keyboards.inline.keyboard_for_analysis import create_keyboards_for_symbol
 from loader import main_router
 from database.read_from_db import read_query
 import traceback
+
 
 @main_router.message(Command('analysis'))
 async def news_func(message: Message, state: FSMContext):
@@ -32,7 +33,7 @@ async def input_symbol(message: Message, state: FSMContext):
                 await message.answer("Сколько вы бы хотели видеть аналитических статей? (максимальное кол-во 40).")
                 return
             else:
-                await create_keyboards(message, res_req)
+                await create_keyboards_for_symbol(message, res_req)
                 return
 
 
@@ -44,8 +45,6 @@ async def analysis_func(message: Message, state: FSMContext):
             unpacked_data = ''.join([item for (item,) in data])
             result_res = request("GET", "https://seeking-alpha.p.rapidapi.com/analysis/v2/list",
                                  querystring={'id': unpacked_data, 'size': int(message.text)})
-            # await state.set_state(UserState.symbol_for_analysis_state)
-
             for k in result_res.json()['data']:
                 url = f"https://seekingalpha.com/{k['links']['self']}"
                 text = f"[{k['attributes']['title']}]({url})"

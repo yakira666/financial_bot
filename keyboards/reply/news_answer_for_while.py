@@ -1,10 +1,10 @@
 from aiogram import F
 from aiogram import types
 from loader import main_router
-from keyboards.inline.keyboard_for_news import create_keyboards
+from keyboards.inline.keyboard_for_news import create_keyboards_category
 from aiogram.fsm.context import FSMContext
 import time
-from database.read_from_db import read_query_news
+
 
 async def cmd_start(message: types.Message):
     kb = [
@@ -25,12 +25,10 @@ async def cmd_start(message: types.Message):
 async def yes(message: types.Message):
     await message.answer("ok... подождите", reply_markup=types.ReplyKeyboardRemove())
     time.sleep(1)
-    await create_keyboards(message)
+    await create_keyboards_category(message)
 
 
 @main_router.message(F.text.lower() == "нет")
 async def no(message: types.Message, state: FSMContext):
     await state.clear()
-    print(await read_query_news(message.chat.id))
-
     await message.answer("Выберите другую команду...", reply_markup=types.ReplyKeyboardRemove())

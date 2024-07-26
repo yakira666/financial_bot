@@ -33,7 +33,7 @@ category = ('market-news::ticker|'
             'market-news::technology').split('|')
 
 
-async def create_keyboards(message: Message):
+async def create_keyboards_category(message: Message):
     keyboard = InlineKeyboardBuilder()
     try:
         for name_c in category:

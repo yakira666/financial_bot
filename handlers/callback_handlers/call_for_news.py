@@ -2,10 +2,10 @@ from loader import main_router
 from aiogram import types
 from loguru import logger
 from aiogram.types import Message
-from keyboards.inline.keyboard_for_news import category, create_keyboards
+from keyboards.inline.keyboard_for_news import category
 from states.user_states import UserState
 from aiogram.fsm.context import FSMContext
-from utils.api_request import request, request_for_profile
+from utils.api_request import request
 from database.add_to_db import add_query_news
 from keyboards.reply import news_answer_for_while
 import traceback
@@ -16,7 +16,8 @@ from datetime import datetime
 async def top_gainers(callback: types.CallbackQuery, state: FSMContext):
     logger.info("Пришел callback")
     if callback.data == "market-news::ticker":
-        print("TYT TICKER")
+        await callback.message.answer("Введите имя компании или ее тикер!")
+        await state.set_state(UserState.ticker_news_state)
     else:
         await state.set_state(UserState.var_news_state)
         await state.update_data(category_news=callback.data)
