@@ -7,7 +7,7 @@ import time
 from states.user_states import UserState
 
 
-async def cmd_crate_menu(message: types.Message):
+async def cmd_create_menu(message: types.Message):
     kb = [
         [
             types.KeyboardButton(text="Получить оценку"),
