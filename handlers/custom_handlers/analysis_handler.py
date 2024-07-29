@@ -1,3 +1,4 @@
+import time
 from aiogram.fsm.context import FSMContext
 from aiogram.filters import Command
 from aiogram.types import Message
@@ -9,6 +10,7 @@ from keyboards.inline.keyboard_for_analysis import create_keyboards_for_symbol
 from loader import main_router
 from database.read_from_db import read_query
 import traceback
+from keyboards.reply.analysis_answer_for_while import cmd_start_analysis
 
 
 @main_router.message(Command('analysis'))
@@ -28,6 +30,7 @@ async def input_symbol(message: Message, state: FSMContext):
                 logger.info(f"Все вверно введено пользователем c User_id:{message.chat.id}, выдаем информацию")
                 await message.answer(f"Мы нашли ваш тикер: <b>{k['name'].replace('</b>', '').replace('<b>', '')}</b>")
                 await state.set_state(UserState.analysis_state)
+                time.sleep(0.5)
                 await add_query(
                     {'chat_id': message.chat.id, "data_symbol": k['name'].replace('</b>', '').replace('<b>', '')})
                 await message.answer("Сколько вы бы хотели видеть аналитических статей? (максимальное кол-во 40).")
@@ -35,6 +38,9 @@ async def input_symbol(message: Message, state: FSMContext):
             else:
                 await create_keyboards_for_symbol(message, res_req)
                 return
+    else:
+        await message.answer(
+            "Мы не нашли ничего по этому тикеру попробуйте ввести другой тикер...")
 
 
 @main_router.message(UserState.analysis_state)
@@ -50,9 +56,10 @@ async def analysis_func(message: Message, state: FSMContext):
                 text = f"[{k['attributes']['title']}]({url})"
                 await message.answer(text, parse_mode="Markdown")
             logger.info(f"Выдан анализ пользователю c User_id:{message.chat.id}")
-            await state.set_state(UserState.symbol_for_analysis_state)
-            await message.answer('Если интересует другой тикер введите его, или выберете другую команду')
-
+            await cmd_start_analysis(message)
+            await state.clear()
+        else:
+            await message.answer(f'Вы ввели неверное число... Повторите ввод!')
     except:
         logger.info(f'Введена неправильная команда!\n{traceback.format_exc()}')
         await state.set_state(UserState.symbol_for_analysis_state)

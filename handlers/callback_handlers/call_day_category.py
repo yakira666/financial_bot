@@ -12,6 +12,7 @@ values_list = ["top_gainers", "top_losers", "cryptocurrencies", "most_active", "
 
 @main_router.callback_query(lambda callback_value: callback_value.data in values_list)
 async def top_gainers(callback: types.CallbackQuery):
+    await callback.message.answer("Подождите секундочку...", )
     res = request('GET', "https://seeking-alpha.p.rapidapi.com/market/get-day-watch", {})
     logger.info(f'Отправка запроса {callback.data} на сервер. Статус запроса: {res.status_code}')
     response_res = res.json()['data']['attributes'][callback.data]

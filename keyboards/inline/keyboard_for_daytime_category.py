@@ -5,8 +5,9 @@ import traceback
 
 async def create_keyboards(message, res):
     keyboard = InlineKeyboardBuilder()
+    result_req = res.json()['data']['attributes']
     try:
-        for name_attr in res.json()['data']['attributes']:
+        for name_attr in result_req:
             keyboard.add(InlineKeyboardButton(text=name_attr, callback_data=name_attr))
         keyboard.adjust(2)
         await message.answer("Выберите категорию которая вам интересна, и подождите какое-то время:\n",

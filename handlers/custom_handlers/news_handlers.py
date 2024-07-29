@@ -6,7 +6,7 @@ from loguru import logger
 from keyboards.reply import news_answer_for_while
 from loader import main_router
 from keyboards.inline.keyboard_for_news import create_keyboards_category
-from keyboards.inline.keyboard_for_analysis import create_keyboards_for_symbol_for_news
+from keyboards.inline.keyboard_for_news import create_keyboards_for_symbol_for_news
 from states.user_states import UserState
 from aiogram.fsm.context import FSMContext
 from utils.api_request import request
@@ -52,7 +52,8 @@ async def analysis_func(message: Message, state: FSMContext):
             logger.info(f"Выданы новости по тикеру, пользователю c User_id:{message.chat.id}")
             await news_answer_for_while.cmd_start(message)
             await state.clear()
-
+        else:
+            await message.answer(f'Вы ввели неверное число... Повторите ввод!')
     except:
         logger.info(f'Введена неправильная команда!\n{traceback.format_exc()}')
         await state.set_state(UserState.ticker_news_state)

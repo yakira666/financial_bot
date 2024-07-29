@@ -22,3 +22,8 @@ async def equity(message: Message):
                 res_text += (f"{i['attributes']['name']} - {i['attributes']['company']}, alias_name -"
                              f" {i['attributes']['alias_name']}\n")
             await message.answer(res_text)
+
+"""
+Замена на пререлиз
+
+"""

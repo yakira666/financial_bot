@@ -2,7 +2,6 @@ from keyboards.inline.keyboard_for_daytime_category import create_keyboards
 from loguru import logger
 from aiogram.filters import Command
 from aiogram.types import Message
-from aiogram import Router
 from utils.api_request import request
 
 from loader import main_router

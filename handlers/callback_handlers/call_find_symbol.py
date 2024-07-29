@@ -17,7 +17,7 @@ async def call_for_analysis(callback: types.CallbackQuery, state: FSMContext):
 
 
 @main_router.callback_query(F.data == 'back_to_symbol')
-async def call_for_back(callback: types.CallbackQuery, state: FSMContext):
+async def call_for_back_analysis(callback: types.CallbackQuery, state: FSMContext):
     await state.set_state(UserState.symbol_for_analysis_state)
     await callback.message.answer('Пожалуйста введите новый тикер для вывода аналитических статей!')
 
@@ -30,6 +30,6 @@ async def call_for_analysis(callback: types.CallbackQuery, state: FSMContext):
 
 
 @main_router.callback_query(F.data == 'back_to_symbol' + 'news')
-async def call_for_back(callback: types.CallbackQuery, state: FSMContext):
+async def call_for_back_news(callback: types.CallbackQuery, state: FSMContext):
     await state.set_state(UserState.ticker_news_state)
     await callback.message.answer('Пожалуйста введите новый тикер для вывода новостей!')
