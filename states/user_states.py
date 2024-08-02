@@ -11,3 +11,5 @@ class UserState(StatesGroup):
     ticker_news_state = State()  # Состояние вылова новостей по тикеру
     number_for_ticker_news = State()  # Запрос кол-ва новостей и их вывод
     symbol_state = State()
+    valuation = State()
+    fundamentals_ticker_state = State()

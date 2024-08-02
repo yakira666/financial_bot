@@ -9,7 +9,7 @@ from keyboards.inline.keyboard_for_news import create_keyboards_category
 from keyboards.inline.keyboard_for_news import create_keyboards_for_symbol_for_news
 from states.user_states import UserState
 from aiogram.fsm.context import FSMContext
-from utils.api_request import request
+from utils.api_request import request, auto_complete_func
 
 
 @main_router.message(Command('news'))
@@ -20,8 +20,7 @@ async def news_func(message: Message):
 
 @main_router.message(UserState.ticker_news_state)
 async def find_news_for_ticker(message: Message, state: FSMContext):
-    res_req = request("GET", "https://seeking-alpha.p.rapidapi.com/v2/auto-complete",
-                      querystring={"query": message.text, 'type': 'symbols', 'size': 10})
+    res_req = await auto_complete_func(message)
     if res := res_req.json()['symbols']:
         for k in res:
             if k['slug'] == message.text.lower():
