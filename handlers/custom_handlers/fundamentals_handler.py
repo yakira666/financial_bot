@@ -1,4 +1,6 @@
 import traceback
+from datetime import datetime
+
 from aiogram.filters import Command
 from aiogram.types import Message
 from loguru import logger
@@ -11,6 +13,7 @@ from keyboards.inline.keyboard_for_fundamentals import create_keyboards_fundamen
 from states.user_states import UserState
 from aiogram.fsm.context import FSMContext
 from utils.api_request import request, auto_complete_func
+from utils.custom_format_func import custom_format
 
 
 @main_router.message(UserState.fundamentals_ticker_state)
@@ -33,8 +36,13 @@ async def find_news_for_ticker(message: Message, state: FSMContext):
                 request_result_for_fund_in_annual = request("GET",
                                                             'https://seeking-alpha.p.rapidapi.com/symbols/get-fundamentals',
                                                             querystring=querystring_annual)
-                print(request_result_for_fund_in_quarterly.text)
-                print(request_result_for_fund_in_annual.json())
+                res_answer_quarterly = f"{res_category_fundamentals} in quarterly:\n"
+                res_answer_annual = f"{res_category_fundamentals} in annual:\n"
+                for r in request_result_for_fund_in_quarterly.json()['data']:
+                    res_answer_quarterly += f'from period_end_date {(r["attributes"]["period_end_date"]).split("T")[0]} - <b>{custom_format(r["attributes"]["value"])}</b>\n'
+                for r in request_result_for_fund_in_annual.json()['data']:
+                    res_answer_annual += f'from period_end_date {(r["attributes"]["period_end_date"]).split("T")[0]} - <b>{custom_format(r["attributes"]["value"])}</b>\n'
+                await message.answer(f"{res_answer_quarterly}\n{res_answer_annual}")
                 return
             else:
                 await create_keyboards_for_symbol_for_fundamentals(message, res_req, 'fundamentals')

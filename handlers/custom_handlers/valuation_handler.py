@@ -71,7 +71,7 @@ async def create_valuation(message: Message, state: FSMContext):
                 await cmd_start_decryption(message)
                 return
             else:
-                await create_keyboards(message, res_req, 'valuation', state)
+                await create_keyboards(message, res_req, 'valuation')
                 return
 
 

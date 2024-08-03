@@ -49,8 +49,10 @@ async def symbol_news(message: types.Message):
 
 @main_router.message(F.text.lower() == "получить фундаментные сведения")
 async def symbol_news(message: types.Message):
-    await message.answer("Выберите категорию которая вам интересна, и подождите какое-то время:", reply_markup=types.ReplyKeyboardRemove())
+    await message.answer("Выберите категорию которая вам интересна, и подождите какое-то время:",
+                         reply_markup=types.ReplyKeyboardRemove())
     await create_keyboards_fundamentals(message)
+
 
 @main_router.message(F.text.lower() == "получить новости")
 # ГОТОВО
